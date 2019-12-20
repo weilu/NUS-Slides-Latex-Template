@@ -1,3 +1,8 @@
+%TODO:
+% - fix example 2, 3 numbering: same example
+% - fix algorithm 2 numbering: should be 3 due to image algo
+% - references for algorithms
+
 % Copyright 2016 by Wang Kunzhen <wangkunzhen1993@gmail.com>.
 %
 % This is a latex template adapted from Till Tantau's Beamer template.
@@ -15,7 +20,31 @@
 % notice. 
 
 \documentclass[xcolor=dvipsnames]{beamer}
+% \documentclass[notes]{beamer}       % print frame + notes
+% \documentclass[notes=only]{beamer}   % only notes
 
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\vbar}{\vert}{\vert}
+\DeclarePairedDelimiter{\vbarbar}{\Vert}{\Vert}
+\DeclarePairedDelimiter{\parenLR}{\lparen}{\rparen}
+\DeclarePairedDelimiter{\brackLR}{\lbrack}{\rbrack}
+\DeclarePairedDelimiter{\braceLR}{\lbrace}{\rbrace}
+\DeclarePairedDelimiter{\angleLR}{\langle}{\rangle}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\tup}[1]{\langle #1 \rangle}
+\renewcommand{\cal}[1]{\mathcal{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\eps}{\varepsilon}
 \newcommand{\Ch}{\mathit{Ch}}
 \newcommand{\ch}{\mathit{ch}}
 \newcommand{\Av}{\mathit{Av}}
@@ -26,6 +55,8 @@
 \newcommand{\I}{\mathit{I}}
 \newcommand{\VI}{\mathit{VI}}
 \newcommand{\AMI}{\mathit{AMI}}
+\newcommand{\samples}{\omega}
+\newcommand{\citenameyear}[1]{\citeauthor{#1}, (\citeyear{#1})}
 
 % There are many different themes available for Beamer. A comprehensive
 % list with examples is given here:
@@ -137,6 +168,7 @@
 \begin{frame}{Background}
   \begin{itemize}
     \item Coalition formation games:
+      \note{A type of cooperative game where players, each with their own preferences, form groups (aka coalitions)}
     \begin{itemize}
       \item Mostly theoretical analysis
       \item Most models require full information on player preference
@@ -184,6 +216,7 @@
 \begin{frame}{Methodology}{Game Theoretic Models}
   \begin{itemize}
     \item Assumes hedonic preferences
+      \note{Under Hedonic preferences, players only care about the makeup of the coalitions of which they are members; they are indifferent about the makeup of other coalitions}
     \begin{itemize}
       \item Top responsive
       \item Bottom responsive
@@ -288,42 +321,533 @@
   \end{table}
 \end{frame}
 
-% You can reveal the parts of a slide one at a time
-% with the \pause command:
-\begin{frame}{Second Slide Title}
-  \begin{itemize}
-  \item {
-    First item.
-    \pause % The slide will pause after showing the first item
-  }
-  % You can also specify when the content should appear
-  % by using <n->:
-  \item<3-> {
-    Third item.
-  }
-  % or you can use the \uncover command to reveal general
-  % content (not just \items):
-  \item<5-> {
-    Fifth item. \uncover<6->{Extra text in the fifth item.}
-  }
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Main Theorem}
-\begin{theorem}
-Theorem Statements. Example for citation \cite{Author1990}.
-\end{theorem}
-
-\begin{proof}
-Proof of the theorem goes here.
-\end{proof}
-\end{frame}
 
 \section{Hedonic Game Stability Models}
 
+\subsection{Top Responsive Games}
+\begin{frame}{Top Responsive Games}{Definitions}
+  Idea: for every player, the value of a coalition depends on the most preferred subset of players
+  \begin{itemize}
+    \item \textit{Choice sets}:
+      $\Ch(i, S) = \{S' \subseteq S: (i \in S') \wedge (S' \succeq_i S'' \forall S'' \subseteq S)\}$\\
+      When $|\Ch(i, S)| = 1$, the unique choice set is $\ch(i, S)$
+      \note{A player i's most preferred set of coalitions}
+    \item A \textit{top responsive} preference profile requires that for any player $i \in N$,
+    and any coalition that may contain player $i$: $S, T \in \mathcal{N}_i$:
+    \begin{enumerate}
+      \item $|\Ch(i, S)| = 1$.
+      \item if $\ch(i, S) \succ_i \ch(i, T)$ then $S \succ_i T$
+      \item if $\ch(i, S) = \ch(i, T)$ and $S \subset T$ then $S \succ_i T$
+    \end{enumerate}
+    \note{In the context of our dataset, it captures the following idea: politicians care about whose votes they stand with; they want to vote with other politicians they like. If they can manage to pass a bill with fewer members involved, it is more efficient therefore more preferable.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Top Responsive Games}{Example}
+\begin{example}
+\label{example:top_responsive_pref}
+  Consider a game of three players with the following choice sets:
+
+  $\ch(1, \{1, 2, 3\}) = \ch(1, \{1, 2\}) = \{1, 2\},
+   \ch(1, \{1, 3\}) = \{1, 3\}, \ch(1, \{1\}) = \{1\}$
+
+  $\ch(2, \{1, 2, 3\}) = \ch(2, \{2, 3\}) = \{2, 3\},
+   \ch(2, \{1, 2\}) = \{1, 2\}, \ch(2, \{2\}) = \{2\}$
+
+  $\ch(3, \{1, 2, 3\}) = \ch(3, \{1, 3\}) = \{1, 3\},
+   \ch(3, \{1, 2\}) = \{1, 2\}, \ch(3, \{3\}) = \{3\}$
+
+  Then the resulting preference profile is top responsive:
+
+  player 1: $\{1, 2\} \succ_1 \{1, 2, 3\} \succ_1 \{1, 3\} \succ_1  \{1\}$
+
+  player 2: $\{2, 3\} \succ_2 \{1, 2, 3\} \succ_2 \{1, 2\} \succ_2  \{2\}$
+
+  player 3: $\{1, 3\} \succ_3 \{1, 2, 3\} \succ_3 \{2, 3\} \succ_3  \{3\}$
+\end{example}
+\end{frame}
+
+\begin{frame}{Top Responsive Games}{Core Finding Algorithms - Full Information}
+  \begin{algorithm}[H]
+    \small
+    \caption{Top Covering Algorithm}
+    \label{alg:top_covering}
+    \textbf{Input:} A hedonic game satisfying top responsiveness.
+
+    \begin{algorithmic}[1]
+    \State $R^1 \leftarrow N$; $\pi \leftarrow \emptyset$.
+
+    \For{$k=1$ to $|N|$}
+      \State \label{top_cover:select} Select $S^k$
+      \State \label{top_cover:remove} $\pi \leftarrow \pi \cup \lbrace S^k \rbrace$ and $R^{k+1} \leftarrow  R^k \setminus S^k$
+      \If {$R^{k+1} = \emptyset$}
+        \State \Return $\pi$
+      \EndIf
+    \EndFor
+
+    \State \Return $\pi$
+   \end{algorithmic}
+  \end{algorithm}
+
+  \small
+  Let $C^1(i, S) = \ch(i, S)$ \note{for player $i \in S, S \subseteq N$}
+  $C^{t + 1}(i, S) = \underset{j \in C^t(i, S)}{\bigcup} \ch(j, S)$ \note{where $t$ is a positive integer}
+
+  The \textit{connected component} of $i$ with respect to $S$: $\CC(i, S) = C^{|N|}(i, S)$
+
+  Step~\ref{top_cover:select}: select $i\in R^k$ such
+  that $|\CC(i,R^k)| \leq |\CC(j,R^k)|$ for each $j\in R^k$;
+  and $S^k\leftarrow \CC(i,R^k)$
+\end{frame}
+
+
+\begin{frame}{Top Responsive Games}{Core Finding Algorithms - PAC}
+  \begin{columns}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{pac_top_cover}
+  \end{figure}
+  \column{0.5\textwidth}
+  \begin{itemize}
+    \scriptsize
+    \item Steps 1-3, 21-27: the same structure as Algorithm~\ref{alg:top_covering}
+    \item Steps 4-20: approximate player preferences from sample observations of coalitions formed
+    \item \cite{ijcai2017-380} Step~21: select $i\in R^k$ such
+                        that $|\CC(i,R^k)| \leq |\CC(j,R^k)|$ for each $j\in R^k$;
+                        and $S^k\leftarrow \CC(i,R^k)$
+    \item Improved Step~21: select the largest Strongly Connected Component (SCC)
+                        in the graph induced by $R^k$ as vertices and directed edges $E$,
+                        $(i, j) \in E$ if $j \in \ch(i, R^k)$ for all $j \in R^k$;
+                        and $S^k\leftarrow \SCC(R^k)$
+  \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Top Responsive Games}{Imporoved Core Finding Algorithm - PAC}
+  \begin{itemize}
+    \item correctness proof
+      \note whiteboarding, proof by picture
+    \item running time improvements:
+    \begin{itemize}
+        \item each iteration: from finding smallest $\CC$'s $\mathcal{O}(|V|(|V| + |E|))$ to finding the largest $\SCC$'s $\mathcal{O}(|V| + |E|)$
+        \item removing more players in the earlier iterations also reduces the amount of computation required for the later iterations
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Top Responsive Games - Handcrafted Value Function}
+
+  Let $S_f$ be the set of members who voted ``for'' and $S_a$ be the set of members who voted ``against''.
+  $S_p = S_f \cup S_a$.
+
+  \begin{equation}
+    v_i(S) =
+    \begin{dcases}
+        1 + \frac{1}{|S|} + \frac{|S_p|}{|N|},& \text{if $S$ is the winning majority}\\
+        0,              & \text{otherwise}
+    \end{dcases}
+  \end{equation}
+
+  \begin{itemize}
+      \item<only@1> A winning coalition is always worth more than a losing coalition
+        \note{winning: being successfully passing a bill or successfully blocking a bill}
+      \item<only@1> $\frac{1}{|S|}$ reflects that a win is more valuable when achieved with fewer members
+        \note{which is also conceptually consistent with top responsive game's preference for smaller coalitions}
+      \item<only@1> The participation term $\frac{|S_p|}{|N|}$ gives a win more value when there are more effective votes for a given bill
+      \item<only@1> Assign all unobserved coalition the value of zero
+        \note{to ensure that the values for observed, winning coalitions are always
+        greater than any unobserved coalition, because intuitively the existence of
+        an observed coalition is evidence that every member in that coalition prefers
+        to be a part of that coalition than some unobserved coalition}
+      \item<only@2> Core stable partition: apply Algorithm~\ref{alg:top_covering} with partial reference profile as input
+        \note{Although the original top covering algorithm expects the full preference
+        profile as input, it would still terminate and produce a partition
+        if the input is a partial preference profile.
+        The produced partition ensures that any of the observed coalitions would
+        have no incentive to deviate.}
+      \item<only@2> PAC stable partition: apply improved Algorithm 2, sampling with replacement to make up for insufficient samples
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Top Responsive Games - Appreciation of Friends}
+
+  Let $G_i$ be player $i$'s set of friends, and $B_i$ the set of enemies.
+  $G_i \cup B_i \cup i = N$ and $G_i \cap B_i = \emptyset$.
+  A preference profile $P^f$ is based on \textit{appreciation of friends} if for all player $i \in N$,
+  $S \succeq_i T$ if and only if
+  \begin{enumerate}
+    \item $|S \cap G_i| > |T \cap G_i|$ or
+    \item $|S \cap G_i| = |T \cap G_i|$ and $|S \cap B_i| \leq |T \cap B_i|$
+  \end{enumerate}
+
+  \begin{itemize}
+      \item<only@1> Friends: anyone whose votes agreed with the given player's more often than they disagreed
+      \item<only@1> Agreed votes are only counted if the given player voted ``for'' or ``against''
+      \item<only@1> Disagreed votes:
+      \begin{enumerate}
+        \item Narrow disagreement (general friends): the other player's vote is different from mine, and is either ``for'' or ``against''
+        \item Broad disagreement (selective friends): the other player's vote is different from mine
+      \end{enumerate}
+      \note{Compared to narrow disagreement, broad disagreement leads to every player being
+            more selective of friends; it may also break the symmetry of the friend relationship}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Top Responsive Games - Appreciation of Friends}{Examples}
+
+\begin{example}
+\label{example:votes_friends}
+  \small
+  Given 3 players and 3 bills, their votes are as follow:
+
+  \begin{table}[ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+         & player 1  & player 2 & player 3 \\ \hline
+  bill A & for       & for      & against \\
+  bill B & abstained & for      & abstained \\
+  bill C & abstained & against  & abstained \\
+  \hline
+  \end{tabular}
+  \end{table}
+
+\end{example}
+
+\small
+\alert{General friends} preference profile:
+
+player 1: $\{1, 2\} \succ_1 \{1, 2, 3\} \succ_1 \{1\} \succ_1 \{1, 3\} $
+
+player 2: $\{1, 2\} \succ_2 \{1, 2, 3\} \succ_2 \{2\} \succ_2 \{2, 3\}$
+
+player 3: $\{3\} \succ_3 \{1, 3\} \sim \{2, 3\} \succ_3 \{1, 2, 3\}$
+
+\alert{Selective friends} preference profile:
+
+player 1: $\{1, 2\} \succ_1 \{1, 2, 3\} \succ_1 \{1\} \succ_1 \{1, 3\} $
+
+player 2: $\{2\} \succ_2 \{1, 2\} \sim \{2, 3\} \succ_2 \{1, 2, 3\} $
+
+player 3: $\{3\} \succ_3 \{1, 3\} \sim \{2, 3\} \succ_3 \{1, 2, 3\}$
+
+\note{Under general friends, players 1 and 2 are friends because they agreed on bill A.
+In comparison, under selective friends, from player 1's point of view, player 2
+is still a friend due to bill A, while player 2 considers player 1 an enemy
+because player 1 did not vote with her for bill B and C.}
+
+\end{frame}
+
+
+\subsection{Bottom Responsive Games}
+
+\begin{frame}{Bottom Responsive Games}{Definitions}
+  Idea: for every player, the value of a coalition depends on \alert{the absence of the least preferred} subset of players
+  \begin{itemize}
+    \item \textit{Avoid sets}:
+      $\Av(i, S) = \{S' \subseteq S: (i \in S') \wedge (S' \preceq_i S'' \forall S'' \subseteq S)\}$
+      \note{A player i's most disliked players}
+    \item A \textit{bottom responsive} preference profile requires:
+
+    \begin{enumerate}
+      \item if for all $S' \in \Av(i, S)$ $T' \in \Av(i, T)$, $ S' \succ_i T'$
+        then $S \succ_i T$
+      \item if $\Av(i, S) \cap \Av(i, T) \neq \emptyset$ and $|S| \geq |T|$
+        then $S \succeq_i T$
+        \note{Different from top responsive game which breaks ``ties'' in favor of
+        smaller coalitions, condition 2 of bottom responsive game breaks ``ties'' in
+        favor of larger coalitions.}
+    \end{enumerate}
+
+    \note{In the context of our parliament voting dataset, by taking a bottom responsive
+          model, we are implicitly assuming that parliament members care more about having
+          no disagreements with people in the set of members who voted with them.}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Bottom Responsive Games - Aversion to Enemies}
+
+  A preference profile $P^e$ is based on \textit{aversion to enemies} if for every
+  player $i \in N$, $S \succeq_i T$ if and only if
+  \begin{enumerate}
+    \item $|S \cap B_i| < |T \cap B_i|$ or
+    \item $|S \cap B_i| = |T \cap B_i|$ and $|S \cap G_i| \geq |T \cap G_i|$
+  \end{enumerate}
+  It is a proper subclass of bottom responsive games
+
+  \begin{itemize}
+      \item<only@1> Friends: anyone whose votes agreed with the given player's more often than they disagreed
+      \item<only@1> Agreed votes are only counted if the given player voted ``for'' or ``against''
+      \item<only@1> Disagreed votes:
+      \begin{enumerate}
+        \item Narrow disagreement (general friends/selective enemies): the other player's vote is different from mine, and is either ``for'' or ``against''
+        \item Broad disagreement (selective friends/general enemies): the other player's vote is different from mine
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Top Responsive Games - Aversion to Enemies}{Examples}
+
+\begin{example} %same as example used in friends
+  \small
+  Given 3 players and 3 bills, their votes are as follow:
+
+  \begin{table}[ht]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+         & player 1  & player 2 & player 3 \\ \hline
+  bill A & for       & for      & against \\
+  bill B & abstained & for      & abstained \\
+  bill C & abstained & against  & abstained \\
+  \hline
+  \end{tabular}
+  \end{table}
+
+\end{example}
+
+\small
+\alert{General friends / selective enemies} preference profile:
+
+player 1: $\{1, 2\} \succ_1 \{1\} \succ_1 \{1, 2, 3\} \succ_1 \{1, 3\} $
+
+player 2: $\{1, 2\} \succ_2 \{2\} \succ_2 \{1, 2, 3\} \succ_2 \{2, 3\}$
+
+player 3: $\{3\} \succ_3 \{1, 3\} \sim \{2, 3\} \succ_3 \{1, 2, 3\}$
+
+\alert{Selective friends / general enemies} preference profile:
+
+player 1: $\{1, 2\} \succ_1 \{1\} \succ_1 \{1, 2, 3\} \succ_1 \{1, 3\} $
+
+player 2: $\{2\} \succ_2 \{1, 2\} \sim \{2, 3\} \succ_2 \{1, 2, 3\} $
+
+player 3: $\{3\} \succ_3 \{1, 3\} \sim \{2, 3\} \succ_3 \{1, 2, 3\}$
+
+\note{Notice that compared to the appreciation of friends model,
+both players 1 and 2 now prefer their respective singleton coalition
+over the grand coalition.
+This illustrates that we can expect to observe smaller coalitions in partitions
+generated from the enemy models compared to that from the friend models.}
+
+\end{frame}
+
+
+\begin{frame}{Bottom Responsive Games}{Core Finding Algorithms - Full Information}
+  \begin{algorithm}[H]
+    \caption{Bottom Responsive Game Core Finding Algorithm}
+    \label{alg:bottom_responsive_core}
+    \textbf{Input:} A bottom responsive game
+    \begin{algorithmic}[1]
+
+    \State $S \leftarrow N$; $\pi \leftarrow \emptyset$.
+    \While {$S \neq \emptyset$}
+      \State \label{bottom_responsive_core:select_begin} Set $\Gamma \leftarrow \{S\}$
+      \State Set $\Phi \leftarrow \lbrace X \in \Gamma | \{i\} \in \Av(i, X) \text{ for each } i \in X \rbrace$
+      \While {$\Phi = \emptyset$}
+        \State $\Gamma \leftarrow \underset{X \in \Gamma}{\bigcup} \underset{i \in X}{\bigcup} \{ X \text{\textbackslash} \{j\} | j \in Y \text{ for some } Y \in \Av(i, X)\}$
+        \State $\Phi \leftarrow \lbrace X \in \Gamma | \{i\} \in \Av(i, X) \text{ for each } i \in X \rbrace$
+      \EndWhile
+      \State \label{bottom_responsive_core:select_end} Select a coalition
+        $X \in \Phi$
+      \State \label{bottom_responsive_core:reduce} Set
+        $\pi \leftarrow \pi \cup \lbrace X \rbrace$ and
+        $S \leftarrow  S \setminus X$
+    \EndWhile
+    \State \Return $\pi$
+
+    \end{algorithmic}
+  \end{algorithm}
+\end{frame}
+
+
+\begin{frame}{Bottom Responsive Games}{Core Finding Algorithms - PAC}
+  \begin{itemize}
+    \item Same structure as Algorithm~\ref{alg:bottom_responsive_core}
+    \item Approximate player preferences $\Av(i, X)$ from samples
+    \begin{itemize}
+      \item Find friends from each set of sample coalitions
+      \item Take intersection of friend sets as ``true friends''
+      \item Let each player's avoid set be players outside the ``true friends'' set
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\subsection{Boolean Hedonic Games}
+
+\begin{frame}{Boolean Hedonic Games}
+  Idea: a player either likes to be a member of a coalition or hates it
+  \note{A player views any coalition she may belong to as either satisfactory or unsatisfactory.}
+  \begin{itemize}
+    \item A player is indifferent among all satisfactory coalitions, same for unsatisfactory coalitions
+    \item Strictly prefers any satisfactory coalition over any unsatisfactory coalition
+    \item Within each bill, ``for'' and ``against'' groups each forms a satisfactory coalition
+    \item Assume unobserved coalitions as unsatisfactory
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Boolean Hedonic Games}{Examples}
+  \begin{example}
+  \label{example:votes_boolean}
+    Given a parliament with 3 players and 3 bills, their votes are as follow:
+
+    \begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+           & player 1  & player 2 & player 3 \\ \hline
+    bill A & for       & against  & for \\
+    bill B & abstained & for      & for \\
+    bill C & for       & against  & against \\
+    \hline
+    \end{tabular}
+    \end{table}
+  \end{example}
+
+  \alert{Boolean} preference profile:
+
+  player 1: $\{1, 3\} \sim \{1\} \succ_1 \{1, 2\} \sim \{1, 2, 3\}$
+
+  player 2: $\{2\} \sim \{2, 3\} \succ_2 \{1, 2\} \sim \{1, 2, 3\}$
+
+  player 3: $\{1, 3\} \sim \{2, 3\} \succ_3 \{3\} \sim \{1, 2, 3\}$
+
+  \note{Observe that the preference profile formulated this way is symmetric ---
+if a coalition is satisfactory for one player, it is also satisfactory for all
+other players within it}
+\end{frame}
+
+
+\begin{frame}{Boolean Hedonic Games}{Core Finding Algorithms - Full Information}
+  \begin{algorithm}[H]
+    \scriptsize
+    \caption{Boolean Hedonic Game Core Finding Algorithm}
+    \label{alg:boolean_core}
+    \textbf{Input:} A Boolean hedonic game
+    \begin{algorithmic}[1]
+
+    \State $N' \leftarrow N$; $\pi \leftarrow \emptyset$.
+    \While {$N' \neq \emptyset$}
+      \State \label{boolean_core:select} Find $S \subset N'$ where all players
+        in $S$ find $S$ satisfactory, and the size of $S$ is the largest if there
+        are multiple such coalitions.
+      \State $\pi \leftarrow \pi \cup \lbrace S \rbrace$ and
+        $N' \leftarrow  N' \setminus S$
+    \EndWhile
+    \State \Return $\pi$
+
+    \end{algorithmic}
+  \end{algorithm}
+
+  \scriptsize
+  \begin{itemize}
+    \item Symmetry in preference profile implies the bill with the broadest support/disapproval also yields the largest coalition
+    \item Symmetry further implies largest cross-party coalition will be part of the output partition
+    \item Selecting any satisfactory coalition (not necessarily the largest) in Step~\ref{boolean_core:select} maintains core stability
+    \item Our implementation: replace largest with median-sized coalition
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Boolean Hedonic Games}{Core Finding Algorithms - PAC}
+  \begin{itemize}
+    \item Same as Algorithm~\ref{alg:boolean_core}
+    \item Only difference: the input is satisfactory coalitions derived from sample bills
+    \item The output is consistent with the observed samples, therefore PAC stable \cite{jha2019learning}
+  \end{itemize}
+\end{frame}
+
 \section{Machine Learning Models}
 
+\subsection{$k$-Means Clustering}
+\begin{frame}{$k$-Means Clustering}
+  $k$-means clustering\cite{Tan:2018:IDM:3208440} divides a given set of samples
+  $x_1, \cdots, x_n$ into $k$ disjoint sets $C$, each described by the mean
+  $\mu_j$ of the samples in the cluster;
+  it produces a partition minimizing the \textit{within-cluster sum-of-squares} (WCSS):
+
+  \[
+      \sum_{i=1}^{n} \underset{\mu_j \in C}{\min}(||x_i - \mu_j||^2)
+  \]
+
+  \begin{itemize}
+    \item General purpose
+    \item Only need to find the best $k$
+    \item Runs fast
+    \item Assumes similar sized clusters
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{$k$-Means Clustering}{Model Construction}
+  Distance between points
+  \begin{itemize}
+    \item Each politician correspond to a point
+    \item Each bill acts as a feature
+    \item A ``for'' vote takes value of 1, ``against'' -1, others 0
+      \note{This simple vote value encoding captures the idea that ``for'' and ``against''
+            votes are far from each other; anything else is neutral and is equidistant
+            to ``for'' and ``against''.}
+  \end{itemize}
+
+  \begin{columns}
+  \column{0.4\textwidth}
+  Finding the best $k$
+  \begin{itemize}
+    \item Elbow method: $k=10$
+    \item Average silhouette: $k=2$
+  \end{itemize}
+
+  \column{0.6\textwidth}
+  \begin{figure}[H]
+    \includegraphics[width=\linewidth]{k_means_wcss}
+    \label{Comparison:fig:k_means_wcss}
+  \end{figure}
+  \end{columns}
+\end{frame}
+
+
+\subsection{Stochastic Block Model}
+
+\begin{frame}{Stochastic Block Model}
+  \begin{itemize}
+    \item A benchmark model in community detection
+    \item Models dataset as a graph: parliament members as nodes, same/different votes as edge weights
+    \item Assumes nodes in the same block shares same probability of being connected to other nodes
+    \item Using Bayesian inference to find a partition that maximizes the likelihood of the observed network
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Stochastic Block Model}{Modeling Edge Weights}
+  \scriptsize
+  \begin{columns}
+  \column{0.5\textwidth}
+  \begin{itemize}
+    \item Positive edge weight: the number of times a pair of politicians voted together, either ``for'' or ``against'' a bill.
+    \item Modeled as a geometric distribution
+  \end{itemize}
+  \includegraphics[width=\linewidth]{sbm_edge_weight_hist}
+
+  \column{0.5\textwidth}
+  \begin{itemize}
+    \item Possibly negative edge weight: the difference between the number of times their votes agree and the number of times their votes disagree
+    \item Modeled as a normal distribution
+  \end{itemize}
+  \includegraphics[width=\linewidth]{sbm_edge_weight_neg_hist}
+  \end{columns}
+\end{frame}
+
 \section{Results \& Discussion}
+
+\begin{frame}{}
+  \begin{itemize}
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{frame}
 
 \section{Conclusion}
 
@@ -356,16 +880,20 @@ Proof of the theorem goes here.
 \begin{frame}{Bibliography}
   \begin{thebibliography}{10}
 
-  \bibitem{Author1990}
-    A.~Author.
-    \newblock {\em Handbook of Everything}.
-    \newblock Some Press, 1990.
+  \bibitem{ijcai2017-380}
+    Jakub Sliwinski and Yair Zick
+    \newblock Learning Hedonic Games
+    \newblock Proceedings of the 26th International Joint Conference on Artificial Intelligence (IJCAI), pp.2730-2736, 2017
 
-  \bibitem{Someone2000}
-    S.~Someone.
-    \newblock On this and that.
-    \newblock {\em Journal of This and That}, 2(1):50--100,
-    2000.
+  \bibitem{jha2019learning}
+    Tushant Jha and Yair Zick
+    \newblock A Learning Framework for Distribution-Based Game-Theoretic Solution Concepts
+    \newblock 2019. arXiv: 1903.08322.
+
+  \bibitem{Tan:2018:IDM:3208440}
+    Tan, Pang-Ning and Steinbach, Michael and Karpatne, Anuj and Kumar, Vipin
+    \newblock Introduction to Data Mining (2Nd Edition)
+    \newblock Pearson, 2018.
 
   \end{thebibliography}
 \end{frame}
