@@ -2,3 +2,5 @@
 *.out
 *.snm
 *.toc
+*.bcf
+*.xml
