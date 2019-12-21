@@ -2,6 +2,7 @@
 % - fix example 2, 3 numbering: same example
 % - fix algorithm 2 numbering: should be 3 due to image algo
 % - references for algorithms
+% - crop sankey diagrams so they show up larger
 
 % Copyright 2016 by Wang Kunzhen <wangkunzhen1993@gmail.com>.
 %
@@ -40,6 +41,11 @@
 \DeclarePairedDelimiter{\angleLR}{\langle}{\rangle}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
 
 \newcommand{\tup}[1]{\langle #1 \rangle}
 \renewcommand{\cal}[1]{\mathcal{#1}}
@@ -841,37 +847,266 @@ other players within it}
 
 \section{Results \& Discussion}
 
-\begin{frame}{}
+\begin{frame}{Variability among PAC Partitions}
+  \small
+  \begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+  \hline
+    Model & Partition Size Mean (SD) & CV \\ \hline
+  Value Function & 87 (0) & 0 \\
+  General Friends & 13 (1.29) & 0.10  \\
+  Selective Friends & 20 (1.83) & 0.09  \\
+  Selective Enemies & 10 (0) & 0 \\
+  General Enemies & 34 (0.84) & 0.02 \\
+  Boolean & 85 (16.92) & 0.2  \\
+  \hline
+  \end{tabular}
+  \caption{PAC model partition size statistics across 50 runs per model}
+  \label{Analysis:table:pac_num_coalitions}
+  \end{table}
+
+  \begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+  \hline
+    Model & Pairwise AMI Mean (Min) & CV \\ \hline
+  Value Function & 1 (1) & 0 \\
+  General Friends & 0.78 (0.6) & 0.09  \\
+  Selective Friends & 0.84 (0.66) & 0.08  \\
+  Selective Enemies & 0.99 (0.97) & 0.01 \\
+  General Enemies & 0.97 (0.93) & 0.01 \\
+  Boolean & 0.18 (-0.06) & 0.86  \\
+  \hline
+  \end{tabular}
+  \caption{PAC Model Partition Pairwise AMI Statistics over 50 Runs per Model}
+  \label{Analysis:table:pac_pairwise_amis}
+  \end{table}
+
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{AMI}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{ami}
+    \caption{AMI between model partition and party affiliations}
+    \label{Analysis:fig:ami}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Quantitative Analysis}{Friends Models - Full Information}
+  \small
+  \begin{columns}
+  \column{0.4\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{friends}
+    \caption[Partition visualization: general friends model]{Partition produced by the general friends model}
+  \end{figure}
+  \column{0.6\textwidth}
+  Full-information models
   \begin{itemize}
-    \item 
-    \item 
-    \item 
+    \item $\AMI_{\text{friends}} = 0$
+    \item $\AMI_{\text{selective friends}} = 0.293$
+    \item More friendly $\rightarrow$ more likely to have grand coalition as final partition
+    \item Major drawback of the full-information friends models: sensitive to the definition of ``friends''
   \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{Friends Models - PAC}
+  \small
+  \begin{columns}
+  \column{0.4\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{friends_pac}
+    \caption[Partition visualization: PAC general friends model]{Partition produced by the PAC general friends model}
+  \end{figure}
+  \column{0.6\textwidth}
+  PAC models
+  \begin{itemize}
+    \item $\AMI_{\text{PAC friends}} = 0.288$
+    \item $\AMI_{\text{PAC selective friends}} = 0.283$
+    \item PAC models dampen their sensitivity to the definition of friends through sampling
+  \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{Boolean Models}
+  \small
+  \begin{columns}
+  \column{0.4\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{boolean}
+    \caption[Partition visualization: Boolean model]{Partition produced by the Boolean model}
+  \end{figure}
+  \column{0.6\textwidth}
+  Full-info model
+  \begin{itemize}
+    \item $\AMI_{\text{Boolean}} = 0.077$
+    \item Too many ``stranded'' singleton coalitions
+      \note{This is a result of a combination of the preference model and the core finding
+algorithm for Boolean hedonic games:
+Once a satisfying coalition $S$ is formed, we remove any other approved
+coalitions that intersect with $S$; this effectively removes many satisfactory
+coalitions for the remaining players.
+If many players are left without satisfactory coalitions, they will be
+``stranded'' in singleton coalitions, as observed.}
+  \end{itemize}
+  PAC model
+  \begin{itemize}
+    \item $\AMI_{\text{PAC Boolean}} = 0.194$
+    \item Slightly better performance
+    \item But of limited representativeness due to high variability
+  \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{Handcrafted Value Function Models}
+  \small
+  \begin{columns}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{value_function_pac}
+    \caption[Partition visualization: PAC value function model]{Partition produced by the PAC value function model}
+  \end{figure}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{value_function}
+    \caption[Partition visualization: value function model]{Partition produced by the value function model}
+  \end{figure}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Quantitative Analysis}{Handcrafted Value Function Models}
+  Full-info model
+  \begin{itemize}
+    \item $\AMI_{\text{Value Fuction}} = 0.290$
+    \item Identified a government coalition and an opposition coalition
+    \item Precense of Yisrael Beiteinu members in coalition 1 (opposition parties) not in line with reality
+  \end{itemize}
+  PAC model
+  \begin{itemize}
+    \item $\AMI_{\text{PAC Value Fuction}} = 0.144$
+    \item Worst performing PAC model
+    \item Many singleton coalitions
+    \item Identified a government coalition
+    \item Missing opposition coalition due to sampling more likely picking government majority bills --- limitation of value function formulation
+      \note{One possible reason why we observe the opposition coalition dissolve while the
+government coalition remains in the PAC version of the model is that the
+government party members has a dominating advantage in the Knesset --- since our
+value function (Function~\ref{eq:value_function}) values a winning majority over
+a losing coalition, the parties forming the government more frequently pass
+or oppose bills successfully than the opposition, therefore they are more
+likely getting picked by the PAC sampling process.}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{SMB - Normal Edge Weights}
+  \small
+  \begin{columns}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{sbm_norm}
+    \caption[Partition visualization: SBM normal model]{Partition produced by the SBM normal model}
+  \end{figure}
+  \column{0.5\textwidth}
+  \begin{itemize}
+    \item $\AMI_{\text{SBM normal}} = 0.192$
+    \item Many small coalitions
+    \item Left-wing/right-wing grouping observed, but fails to distinguish the government from the opposition
+  \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Quantitative Analysis}{Model Selection}
+  \small
+  \begin{columns}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{ami}
+    \caption{AMI: higher means closer to ground truth}
+  \end{figure}
+  \column{0.5\textwidth}
+  \begin{figure}
+    \includegraphics[width=\linewidth]{vi}
+    \caption{VI: lower means closer to ground truth}
+  \end{figure}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Qualitative Analysis}{Selected Models}
+  PAC Models
+  \begin{itemize}
+    \item Selective Friends
+    \item Selective Enemies
+    \item Boolean
+  \end{itemize}
+  Comparison ML Models
+  \begin{itemize}
+    \item 2-group $k$-means
+    \item 10-group $k$-means
+    \item SBM Geometric
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Qualitative Analysis}
+  Criteria
+  \begin{itemize}
+    \item Coherence: separate coalition and opposition parties cleanly? (no mixed coalitions)
+    \item Overal Structure: able to distinguish between the main government and opposition groups?
+    \item Party Sub-groups: able to identify subgroups within parties?
+  \end{itemize}
+
+  \begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+    Model & Coherence & Structure & Sub-group \\ \hline
+  PAC Selective Friends & \cmark & \cmark & \xmark \\
+  PAC Selective Enemies & \cmark & \cmark & \xmark \\
+  PAC Boolean & \cmark & \cmark & \xmark  \\
+  2-group $k$-means & \xmark & \cmark & \xmark \\
+  10-group $k$-means & \xmark & \xmark & \xmark \\
+  SBM Geometric & \xmark & \xmark & \xmark \\
+  \hline
+  \end{tabular}
+  \end{table}
+
 \end{frame}
 
 \section{Conclusion}
 
-\begin{frame}{Summary}
+\begin{frame}{Conclusion}
+  Summary
   \begin{itemize}
-  \item
-    The \alert{first main message} of your talk in one or two lines.
-  \item
-    The \alert{second main message} of your talk in one or two lines.
-  \item
-    Perhaps a \alert{third message}, but not more than that.
-  \end{itemize}
-  
-  \begin{itemize}
-  \item
-    Outlook
+    \item ML methods: do not consider players' preferences and strategic behavior
+    \item Game theoretic research: mostly theoretical or prescriptive with simulated data
+    \item This thesis: a ``descriptive'' study of hedonic game theoretical models using real-world data of scale, and with ground truth
     \begin{itemize}
-    \item
-      Something you haven't solved.
-    \item
-      Something else you haven't solved.
+      \item PAC models are able to recover overall structure \& more coherent than ML models
+      \item PAC approach result is more robust than full-info approach
+        \note{By comparing the PAC and full-information settings for the friends models, we
+observe that through sampling, PAC models produce partition results that are
+more robust --- sampling helps ``dampen'' the model's sensitivity to the
+definition of friends.}
     \end{itemize}
   \end{itemize}
+
+  Future Research
+  \begin{itemize}
+  \item Apply PAC models on other parliaments, e.g. Dutch, Brazilian, US congress
+  \item Apply other hedonic uncertainty models, e.g. Baysian core, on the Knesset dataset
+  \end{itemize}
 \end{frame}
+
 
 % Placing a * after \section means it will not show in the
 % outline or table of contents.
