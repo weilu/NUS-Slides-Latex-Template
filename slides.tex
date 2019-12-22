@@ -366,18 +366,20 @@ A \textit{PAC stabilizing} algorithm:
 \end{frame}
 
 \begin{frame}{Top Responsive Games}{Example}
-\begin{example}
-\label{example:top_responsive_pref}
-  Consider a game of three players with the following choice sets:
+  \begin{example}
+    \label{example:top_responsive_pref}
+    \small
+    Consider a game of three players with the following choice sets:
 
-  $\ch(1, \{1, 2, 3\}) = \ch(1, \{1, 2\}) = \{1, 2\},
-   \ch(1, \{1, 3\}) = \{1, 3\}, \ch(1, \{1\}) = \{1\}$
+    $\ch(1, \{1, 2, 3\}) = \ch(1, \{1, 2\}) = \{1, 2\},
+     \ch(1, \{1, 3\}) = \{1, 3\}, \ch(1, \{1\}) = \{1\}$
 
-  $\ch(2, \{1, 2, 3\}) = \ch(2, \{2, 3\}) = \{2, 3\},
-   \ch(2, \{1, 2\}) = \{1, 2\}, \ch(2, \{2\}) = \{2\}$
+    $\ch(2, \{1, 2, 3\}) = \ch(2, \{2, 3\}) = \{2, 3\},
+     \ch(2, \{1, 2\}) = \{1, 2\}, \ch(2, \{2\}) = \{2\}$
 
-  $\ch(3, \{1, 2, 3\}) = \ch(3, \{1, 3\}) = \{1, 3\},
-   \ch(3, \{1, 2\}) = \{1, 2\}, \ch(3, \{3\}) = \{3\}$
+    $\ch(3, \{1, 2, 3\}) = \ch(3, \{1, 3\}) = \{1, 3\},
+     \ch(3, \{1, 2\}) = \{1, 2\}, \ch(3, \{3\}) = \{3\}$
+  \end{example}
 
   Then the resulting preference profile is top responsive:
 
@@ -386,7 +388,6 @@ A \textit{PAC stabilizing} algorithm:
   player 2: $\{2, 3\} \succ_2 \{1, 2, 3\} \succ_2 \{1, 2\} \succ_2  \{2\}$
 
   player 3: $\{1, 3\} \succ_3 \{1, 2, 3\} \succ_3 \{2, 3\} \succ_3  \{3\}$
-\end{example}
 \end{frame}
 
 \begin{frame}{Top Responsive Games}{Core Finding Algorithms - Full Information}
