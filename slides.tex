@@ -2,7 +2,7 @@
 % - fix example 2, 3 numbering: same example
 % - fix algorithm 2 numbering: should be 3 due to image algo
 % - references for algorithms
-% - crop sankey diagrams so they show up larger
+% - add speaker notes
 
 % Copyright 2016 by Wang Kunzhen <wangkunzhen1993@gmail.com>.
 %
@@ -127,6 +127,9 @@
 
 \setbeamertemplate{theorems}[numbered]
 \setbeamertemplate{propositions}[numbered]
+
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\setbeamerfont{caption}{size=\scriptsize}
 
 \setbeamertemplate{bibliography item}{\insertbiblabel}
 
@@ -915,7 +918,7 @@ other players within it}
   \column{0.4\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{friends}
-    \caption[Partition visualization: general friends model]{Partition produced by the general friends model}
+    \caption{General friends model output}
   \end{figure}
   \column{0.6\textwidth}
   Full-information models
@@ -935,7 +938,7 @@ other players within it}
   \column{0.4\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{friends_pac}
-    \caption[Partition visualization: PAC general friends model]{Partition produced by the PAC general friends model}
+    \caption{PAC general friends model output}
   \end{figure}
   \column{0.6\textwidth}
   PAC models
@@ -954,7 +957,7 @@ other players within it}
   \column{0.4\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{boolean}
-    \caption[Partition visualization: Boolean model]{Partition produced by the Boolean model}
+    \caption{Boolean model output}
   \end{figure}
   \column{0.6\textwidth}
   Full-info model
@@ -985,12 +988,12 @@ If many players are left without satisfactory coalitions, they will be
   \column{0.5\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{value_function_pac}
-    \caption[Partition visualization: PAC value function model]{Partition produced by the PAC value function model}
+    \caption{PAC value function model output}
   \end{figure}
   \column{0.5\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{value_function}
-    \caption[Partition visualization: value function model]{Partition produced by the value function model}
+    \caption{Value function model output}
   \end{figure}
   \end{columns}
 \end{frame}
@@ -1026,7 +1029,7 @@ likely getting picked by the PAC sampling process.}
   \column{0.5\textwidth}
   \begin{figure}
     \includegraphics[width=\linewidth]{sbm_norm}
-    \caption[Partition visualization: SBM normal model]{Partition produced by the SBM normal model}
+    \caption{SBM normal model output}
   \end{figure}
   \column{0.5\textwidth}
   \begin{itemize}
