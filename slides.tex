@@ -61,6 +61,9 @@
 \newcommand{\VI}{\mathit{VI}}
 \newcommand{\AMI}{\mathit{AMI}}
 \newcommand{\samples}{\omega}
+
+\usepackage{biblatex}
+\addbibresource{reference.bib}
 \newcommand{\citenameyear}[1]{\citeauthor{#1}, (\citeyear{#1})}
 
 % There are many different themes available for Beamer. A comprehensive
@@ -445,7 +448,7 @@ A \textit{PAC stabilizing} algorithm:
     \scriptsize
     \item Steps 1-3, 21-27: the same structure as Algorithm~\ref{alg:top_covering}
     \item Steps 4-20: approximate player preferences from sample observations of coalitions formed
-    \item \cite{ijcai2017-380} Step~21: select $i\in R^k$ such
+    \item Original \cite{ijcai2017-380} Step~21: select $i\in R^k$ such
                         that $|\CC(i,R^k)| \leq |\CC(j,R^k)|$ for each $j\in R^k$;
                         and $S^k\leftarrow \CC(i,R^k)$
     \item Improved Step~21: select the largest Strongly Connected Component (SCC)
@@ -1135,29 +1138,10 @@ definition of friends.}
 \end{frame}
 
 
-% Placing a * after \section means it will not show in the
-% outline or table of contents.
-% Bibliography section. Use \bibitem to add more bibliography items.
+% Placing a * after \section means it will not show in the outline or table of contents.
 \section*{Bibliography}
-\begin{frame}{Bibliography}
-  \begin{thebibliography}{10}
-
-  \bibitem{ijcai2017-380}
-    Jakub Sliwinski and Yair Zick
-    \newblock Learning Hedonic Games
-    \newblock Proceedings of the 26th International Joint Conference on Artificial Intelligence (IJCAI), pp.2730-2736, 2017
-
-  \bibitem{jha2019learning}
-    Tushant Jha and Yair Zick
-    \newblock A Learning Framework for Distribution-Based Game-Theoretic Solution Concepts
-    \newblock 2019. arXiv: 1903.08322.
-
-  \bibitem{Tan:2018:IDM:3208440}
-    Tan, Pang-Ning and Steinbach, Michael and Karpatne, Anuj and Kumar, Vipin
-    \newblock Introduction to Data Mining (2Nd Edition)
-    \newblock Pearson, 2018.
-
-  \end{thebibliography}
+\begin{frame}[allowframebreaks]{Bibliography}
+  \printbibliography
 \end{frame}
 
 \end{document}
