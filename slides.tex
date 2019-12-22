@@ -202,11 +202,25 @@
 \end{frame}
 
 \begin{frame}{Probably Approximately Correct (PAC) Stability}
-  % \begin{itemize}
-  %   \item 
-  %   \item 
-  %   \item 
-  % \end{itemize}
+  \small
+  Given $m$ observations of formed coalitions $S_1,\dots,S_m$ sampled i.i.d. from some distribution $\cal D$, and the cardinal valuations of players in $S_j$ $(v_i(S_j))_{i \in S}$
+  \note{Assume that future coalitions will be sampled from the same distribution.}
+
+  \textit{Local loss} given a coalition structure $\pi$ and a coalition $S \subseteq N$:
+$$\lambda(\pi,S) = \begin{cases}1 & \mbox{if }\forall i \in S: v_i(S) > v_i(\pi(i))\\0&\mbox{otherwise.}\end{cases}$$
+  \note{$\lambda(\pi,S)$ incurs a loss of 1 if $\pi$ was not able to hedge against the members of $S$ deviating from $\pi$.}
+  The \textit{expected loss} of $\pi$ w.r.t. $\cal D$:
+$$L_{\cal D}(\pi) = \Pr_{S \sim \cal D}\left[\lambda(\pi,S) =1\right]\label{eq:total-loss-D}$$
+
+A \textit{PAC stabilizing} algorithm:
+  \begin{itemize}
+    \item input: a set of i.i.d. samples $S_1,\dots,S_m \sim \cal D^m$
+    \item output: a coalition structure $\pi^*$  with the following guarantee:
+    $\Pr_{(S_1,\dots,S_m)\sim \cal D^m}[L_{\cal D}(\pi^*) \ge \eps]< \delta \label{eq:pac-stable}$
+    \item The number of samples needed $m$ grows linearly in the number of players, and polynomially in $\frac1\eps$ and $\log\frac1\delta$
+  \end{itemize}
+
+
 \end{frame}
 
 \begin{frame}{Research Questions}
