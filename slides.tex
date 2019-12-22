@@ -2,6 +2,7 @@
 % - fix example 2, 3 numbering: same example
 % - references for algorithms
 % - add speaker notes
+% - go through improved top responsive algo proof
 
 % Copyright 2016 by Wang Kunzhen <wangkunzhen1993@gmail.com>.
 %
@@ -153,16 +154,15 @@
    \includegraphics[width=2cm]{nus-logo}
 }
 
-\date{Jan 2020}
+\date{Dec 2019}
 
 % Uncomment this, if you want the table of contents to pop up at
 % the beginning of each subsection:
-% \AtBeginSubsection[]
-% {
-%   \begin{frame}<beamer>{Outline}
-%     \tableofcontents[currentsection,currentsubsection]
-%   \end{frame}
-% }
+\AtBeginSubsection[]{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
 
 \begin{document}
 
@@ -177,13 +177,15 @@
 \section{Introduction}
 
 \begin{frame}{Background}
+  How to divide people into groups?
   \begin{itemize}
     \item Coalition formation games:
-      \note{A type of cooperative game where players, each with their own preferences, form groups (aka coalitions)}
+      \note{A type of cooperative game where players, each with their own preferences, form groups (aka coalitions). }
     \begin{itemize}
       \item Mostly theoretical analysis
+        \note{Past works study stabilitysolution concepts such as the core where no group of players can be better off by deviating from their current coalition.}
       \item Most models require full information on player preference
-      \item Lack of large dataset with ground truth
+      \item Lack of large real-world dataset with ground truth
     \end{itemize}
     \item Clustering \& community detection:
     \begin{itemize}
@@ -194,16 +196,25 @@
 \end{frame}
 
 \begin{frame}{Data}
+  \begin{columns}
+  \column{0.8\textwidth}
   \begin{itemize}
     \item Israeli parliament (the Knesset) voting data
     \item Available since March 2017
-    \item Contains 147 parliament members' votes on over 7500 bills in $\sim$ 4 years
+    \item For the 20th Knesset: 147 parliament members' votes on over 7500 bills in $\sim$ 4 years
     \item Ground truth clusters: political party affiliations
     \begin{itemize}
-      \item 10 parties aligned along a left-right axis
-      \item Ideological agreement among the government (right) and the opposition (left) parties respectively
+      \item<2-> 10 parties aligned along a left-right axis
+      \item<2-> Ideological agreement among the government (right) and the opposition (left) parties respectively
     \end{itemize}
   \end{itemize}
+  \column{0.2\textwidth}
+  \uncover<2->{
+    \begin{figure}
+      \includegraphics[width=0.9\linewidth]{parties}
+    \end{figure}
+  }
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Probably Approximately Correct (PAC) Stability}
@@ -211,11 +222,13 @@
   Given $m$ observations of formed coalitions $S_1,\dots,S_m$ sampled i.i.d. from some distribution $\cal D$, and the cardinal valuations of players in $S_j$ $(v_i(S_j))_{i \in S}$
   \note{Assume that future coalitions will be sampled from the same distribution.}
 
-  \textit{Local loss} given a coalition structure $\pi$ and a coalition $S \subseteq N$:
+  The \textit{local loss} of a coalition structure $\pi$ and a coalition $S \subseteq N$:
 $$\lambda(\pi,S) = \begin{cases}1 & \mbox{if }\forall i \in S: v_i(S) > v_i(\pi(i))\\0&\mbox{otherwise.}\end{cases}$$
   \note{$\lambda(\pi,S)$ incurs a loss of 1 if $\pi$ was not able to hedge against the members of $S$ deviating from $\pi$.}
   The \textit{expected loss} of $\pi$ w.r.t. $\cal D$:
 $$L_{\cal D}(\pi) = \Pr_{S \sim \cal D}\left[\lambda(\pi,S) =1\right]\label{eq:total-loss-D}$$
+  \note{Core stability requires this probability to equal 0, meaning no group of players can be better off by deviating. }
+  \note{This captures a probabilistic variant of the core condition: rather than requiring that $\lambda(\pi,S) = 0$ for all $S \subseteq N$ (as is the case for the core), we require that it is low, w.r.t. distribution $\cal D$.}
 
 A \textit{PAC stabilizing} algorithm:
   \begin{itemize}
@@ -240,8 +253,8 @@ A \textit{PAC stabilizing} algorithm:
 
 \begin{frame}{Methodology}{Game Theoretic Models}
   \begin{itemize}
-    \item Assumes hedonic preferences
-      \note{Under Hedonic preferences, players only care about the makeup of the coalitions of which they are members; they are indifferent about the makeup of other coalitions}
+    \item Coalition formation games with hedonic preferences
+      \note{Under Hedonic preferences, players only care about the makeup of the coalitions of which they are members; they are indifferent about the makeup of other coalitions.}
     \begin{itemize}
       \item Top responsive
       \item Bottom responsive
@@ -356,7 +369,7 @@ A \textit{PAC stabilizing} algorithm:
     \item \textit{Choice sets}:
       $\Ch(i, S) = \{S' \subseteq S: (i \in S') \wedge (S' \succeq_i S'' \forall S'' \subseteq S)\}$\\
       When $|\Ch(i, S)| = 1$, the unique choice set is $\ch(i, S)$
-      \note{A player i's most preferred set of coalitions}
+      \note{A player i's most preferred set of coalitions.}
     \item A \textit{top responsive} preference profile requires that for any player $i \in N$,
     and any coalition that may contain player $i$: $S, T \in \mathcal{N}_i$:
     \begin{enumerate}
@@ -381,7 +394,7 @@ A \textit{PAC stabilizing} algorithm:
      \ch(2, \{1, 2\}) = \{1, 2\}, \ch(2, \{2\}) = \{2\}$
 
     $\ch(3, \{1, 2, 3\}) = \ch(3, \{1, 3\}) = \{1, 3\},
-     \ch(3, \{1, 2\}) = \{1, 2\}, \ch(3, \{3\}) = \{3\}$
+     \ch(3, \{2, 3\}) = \{2, 3\}, \ch(3, \{3\}) = \{3\}$
   \end{example}
 
   Then the resulting preference profile is top responsive:
@@ -416,8 +429,8 @@ A \textit{PAC stabilizing} algorithm:
   \end{algorithm}
 
   \small
-  Let $C^1(i, S) = \ch(i, S)$ \note{for player $i \in S, S \subseteq N$}
-  $C^{t + 1}(i, S) = \underset{j \in C^t(i, S)}{\bigcup} \ch(j, S)$ \note{where $t$ is a positive integer}
+  Let $C^1(i, S) = \ch(i, S)$ \note{for player $i \in S, S \subseteq N$,}
+  $C^{t + 1}(i, S) = \underset{j \in C^t(i, S)}{\bigcup} \ch(j, S)$ \note{where $t$ is a positive integer.}
 
   The \textit{connected component} of $i$ with respect to $S$: $\CC(i, S) = C^{|N|}(i, S)$
 
@@ -462,7 +475,7 @@ A \textit{PAC stabilizing} algorithm:
 \begin{frame}{Top Responsive Games}{Imporoved Core Finding Algorithm - PAC}
   \begin{itemize}
     \item correctness proof
-      \note whiteboarding, proof by picture
+      \note{whiteboarding, proof by picture}
     \item running time improvements:
     \begin{itemize}
         \item each iteration: from finding smallest $\CC$'s $\mathcal{O}(|V|(|V| + |E|))$ to finding the largest $\SCC$'s $\mathcal{O}(|V| + |E|)$
@@ -486,15 +499,15 @@ A \textit{PAC stabilizing} algorithm:
 
   \begin{itemize}
       \item<only@1> A winning coalition is always worth more than a losing coalition
-        \note{winning: being successfully passing a bill or successfully blocking a bill}
+        \note{winning: being successfully passing a bill or successfully blocking a bill.}
       \item<only@1> $\frac{1}{|S|}$ reflects that a win is more valuable when achieved with fewer members
-        \note{which is also conceptually consistent with top responsive game's preference for smaller coalitions}
+        \note{which is also conceptually consistent with top responsive game's preference for smaller coalitions.}
       \item<only@1> The participation term $\frac{|S_p|}{|N|}$ gives a win more value when there are more effective votes for a given bill
       \item<only@1> Assign all unobserved coalition the value of zero
         \note{to ensure that the values for observed, winning coalitions are always
         greater than any unobserved coalition, because intuitively the existence of
         an observed coalition is evidence that every member in that coalition prefers
-        to be a part of that coalition than some unobserved coalition}
+        to be a part of that coalition than some unobserved coalition.}
       \item<only@2> Core stable partition: apply Algorithm~\ref{alg:top_covering} with partial reference profile as input
         \note{Although the original top covering algorithm expects the full preference
         profile as input, it would still terminate and produce a partition
@@ -525,7 +538,7 @@ A \textit{PAC stabilizing} algorithm:
         \item Broad disagreement (selective friends): the other player's vote is different from mine
       \end{enumerate}
       \note{Compared to narrow disagreement, broad disagreement leads to every player being
-            more selective of friends; it may also break the symmetry of the friend relationship}
+            more selective of friends; it may also break the symmetry of the friend relationship.}
   \end{itemize}
 \end{frame}
 
@@ -582,7 +595,7 @@ because player 1 did not vote with her for bill B and C.}
   \begin{itemize}
     \item \textit{Avoid sets}:
       $\Av(i, S) = \{S' \subseteq S: (i \in S') \wedge (S' \preceq_i S'' \forall S'' \subseteq S)\}$
-      \note{A player i's most disliked players}
+      \note{A player i's most disliked players.}
     \item A \textit{bottom responsive} preference profile requires:
 
     \begin{enumerate}
@@ -645,7 +658,7 @@ because player 1 did not vote with her for bill B and C.}
 \end{example}
 
 \small
-\alert{General friends / selective enemies} preference profile:
+\alert{Selective enemies} preference profile:
 
 player 1: $\{1, 2\} \succ_1 \{1\} \succ_1 \{1, 2, 3\} \succ_1 \{1, 3\} $
 
@@ -653,7 +666,7 @@ player 2: $\{1, 2\} \succ_2 \{2\} \succ_2 \{1, 2, 3\} \succ_2 \{2, 3\}$
 
 player 3: $\{3\} \succ_3 \{1, 3\} \sim \{2, 3\} \succ_3 \{1, 2, 3\}$
 
-\alert{Selective friends / general enemies} preference profile:
+\alert{General enemies} preference profile:
 
 player 1: $\{1, 2\} \succ_1 \{1\} \succ_1 \{1, 2, 3\} \succ_1 \{1, 3\} $
 
@@ -682,7 +695,7 @@ generated from the enemy models compared to that from the friend models.}
       \State \label{bottom_responsive_core:select_begin} Set $\Gamma \leftarrow \{S\}$
       \State Set $\Phi \leftarrow \lbrace X \in \Gamma | \{i\} \in \Av(i, X) \text{ for each } i \in X \rbrace$
       \While {$\Phi = \emptyset$}
-        \State $\Gamma \leftarrow \underset{X \in \Gamma}{\bigcup} \underset{i \in X}{\bigcup} \{ X \text{\textbackslash} \{j\} | j \in Y \text{ for some } Y \in \Av(i, X)\}$
+        \State $\Gamma \leftarrow \underset{X \in \Gamma}{\bigcup} \underset{i \in X}{\bigcup} \{ X \setminus \{j\} | j \in Y \text{ for some } Y \in \Av(i, X)\}$
         \State $\Phi \leftarrow \lbrace X \in \Gamma | \{i\} \in \Av(i, X) \text{ for each } i \in X \rbrace$
       \EndWhile
       \State \label{bottom_responsive_core:select_end} Select a coalition
@@ -753,7 +766,7 @@ generated from the enemy models compared to that from the friend models.}
 
   \note{Observe that the preference profile formulated this way is symmetric ---
 if a coalition is satisfactory for one player, it is also satisfactory for all
-other players within it}
+other players within it.}
 \end{frame}
 
 
@@ -877,6 +890,8 @@ other players within it}
 
 \section{Results \& Discussion}
 
+\subsection{Variability among PAC Partitions}
+
 \begin{frame}{Variability among PAC Partitions}
   \small
   \begin{table}[H]
@@ -916,6 +931,7 @@ other players within it}
 \end{frame}
 
 
+\subsection{Quantitative Analysis}
 \begin{frame}{Quantitative Analysis}{AMI}
   \begin{figure}[H]
     \centering
@@ -1028,7 +1044,7 @@ If many players are left without satisfactory coalitions, they will be
       \note{One possible reason why we observe the opposition coalition dissolve while the
 government coalition remains in the PAC version of the model is that the
 government party members has a dominating advantage in the Knesset --- since our
-value function (Function~\ref{eq:value_function}) values a winning majority over
+value function values a winning majority over
 a losing coalition, the parties forming the government more frequently pass
 or oppose bills successfully than the opposition, therefore they are more
 likely getting picked by the PAC sampling process.}
@@ -1036,7 +1052,7 @@ likely getting picked by the PAC sampling process.}
 \end{frame}
 
 
-\begin{frame}{Quantitative Analysis}{SMB - Normal Edge Weights}
+\begin{frame}{Quantitative Analysis}{SBM - Normal Edge Weights}
   \small
   \begin{columns}
   \column{0.5\textwidth}
@@ -1071,6 +1087,7 @@ likely getting picked by the PAC sampling process.}
 \end{frame}
 
 
+\subsection{Qualitative Analysis}
 \begin{frame}{Qualitative Analysis}{Selected Models}
   PAC Models
   \begin{itemize}
